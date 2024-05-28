@@ -1,0 +1,57 @@
+body,
+button,
+input,
+select,
+textarea {
+  font:
+    12px/1.5 tahoma,
+    arial,
+    'Hiragino Sans GB',
+    '\5b8b\4f53',
+    sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Ubuntu,
+    Cantarell,
+    Noto Sans,
+    sans-serif,
+    Apple Color Emoji,
+    Segoe UI Emoji,
+    Segoe UI Symbol,
+    Noto Color Emoji,
+    BlinkMacSystemFont,
+    Helvetica Neue,
+    Arial,
+    PingFang SC,
+    PingFang TC,
+    PingFang HK,
+    Microsoft Yahei,
+    Microsoft JhengHei !important;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  background: #f5f4fb;
+  margin: 24px 18px;
+  user-select: none;
+}
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.setting {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.8;
+  }
+  &:active {
+    opacity: 0.6;
+  }
+}

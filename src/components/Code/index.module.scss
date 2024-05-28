@@ -1,0 +1,45 @@
+.code {
+  background-color: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: space-between;
+}
+.counter {
+  display: flex;
+  align-items: center;
+}
+.provider {
+  display: flex;
+}
+.icon {
+  margin-right: 9px;
+}
+.email {
+  font-size: 14px;
+  color: #919baf;
+}
+h3 {
+  font-size: 14px;
+  margin: 0;
+}
+.key {
+  margin-top: 8px;
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: 0px;
+  line-height: 36px;
+  color: #327bf2;
+}
+@mixin circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 100%;
+  border: 5px solid #d1e0ff;
+}
+.counter {
+  @include circle();
+  position: relative;
+}
