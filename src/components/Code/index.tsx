@@ -5,6 +5,10 @@ import alipay from '@/assets/alipay.svg';
 type Props = {};
 
 const Code: FC = (props: Props) => {
+  const getProgress = (p: number) => {
+    return (2 * Math.PI * 21 * p) / 100;
+  };
+
   return (
     <div className={styles.code}>
       <div>
@@ -17,9 +21,16 @@ const Code: FC = (props: Props) => {
         </div>
         <div className={styles.key}>1234567890</div>
       </div>
-      <div className={styles.counter}>
-        <div></div>
-      </div>
+      <svg className={styles.counter}>
+        <circle r="21" cx="24" cy="24" className={styles.outer}></circle>
+        <circle
+          r="21"
+          cx="24"
+          cy="24"
+          strokeDasharray={`${getProgress(25)} 999`}
+          className={styles.inner}
+        ></circle>
+      </svg>
     </div>
   );
 };

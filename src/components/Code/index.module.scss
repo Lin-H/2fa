@@ -33,13 +33,24 @@ h3 {
   line-height: 36px;
   color: #327bf2;
 }
-@mixin circle {
+.counter {
+  fill: none;
   width: 48px;
   height: 48px;
-  border-radius: 100%;
-  border: 5px solid #d1e0ff;
-}
-.counter {
-  @include circle();
   position: relative;
+}
+.outer {
+  stroke-width: 5;
+  stroke: #d1e0ff;
+  transition: stroke 0.3s linear;
+}
+.inner {
+  stroke-width: 5;
+  stroke: #2970ff;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transition:
+    stroke 0.3s linear,
+    stroke-dasharray 0.3s linear;
+  transform-origin: center;
 }
