@@ -11,19 +11,20 @@
     "start": "tauri dev"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "@tauri-apps/api": "^2.11.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "wouter": "^3.9.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1",
-    "@types/node": "^20.12.12",
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react": "^4.2.1",
-    "prettier": "^3.2.5",
-    "sass": "^1.77.2",
-    "typescript": "^5.4.5",
-    "vite": "^5.0.0"
+    "@tauri-apps/cli": "^2.11.2",
+    "@types/node": "^25.9.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "prettier": "^3.8.3",
+    "sass": "^1.99.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.13"
   }
 }

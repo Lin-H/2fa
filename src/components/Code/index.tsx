@@ -2,9 +2,7 @@ import { FC } from 'react';
 import styles from './index.module.scss';
 import alipay from '@/assets/alipay.svg';
 
-type Props = {};
-
-const Code: FC = (props: Props) => {
+const Code: FC = () => {
   const getProgress = (p: number) => {
     return (2 * Math.PI * 21 * p) / 100;
   };
