@@ -13,10 +13,11 @@ interface CodeData {
   remaining: number;
 }
 
-const CodeItem: FC<{ account: Account; index: number; onDelete: () => void }> = ({
+const CodeItem: FC<{ account: Account; index: number; onDelete: () => void; onCopy: () => void }> = ({
   account,
   index,
   onDelete,
+  onCopy,
 }) => {
   const [data, setData] = useState<CodeData>({ code: '------', remaining: 30 });
   const [showDelete, setShowDelete] = useState(false);
@@ -38,6 +39,16 @@ const CodeItem: FC<{ account: Account; index: number; onDelete: () => void }> = 
     return () => clearInterval(timer);
   }, [account.secret]);
 
+  const handleClick = async () => {
+    if (showDelete || showConfirm) return;
+    try {
+      await navigator.clipboard.writeText(data.code);
+      onCopy();
+    } catch {
+      // silent
+    }
+  };
+
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     setShowDelete((v) => !v);
@@ -57,10 +68,10 @@ const CodeItem: FC<{ account: Account; index: number; onDelete: () => void }> = 
   const progress = (data.remaining / 30) * 100;
 
   return (
-    <div className={styles.code} onContextMenu={handleContextMenu}>
+    <div className={styles.code} onContextMenu={handleContextMenu} onClick={handleClick}>
       {showDelete && (
-        <div className={styles.deleteArea}>
-          <button className={styles.deleteBtn} onClick={() => setShowConfirm(true)}>
+        <div className={styles.deleteArea} onClick={(e) => e.stopPropagation()}>
+          <button className={styles.deleteBtn} onClick={(e) => { e.stopPropagation(); setShowConfirm(true); }}>
             Delete
           </button>
         </div>
@@ -71,8 +82,8 @@ const CodeItem: FC<{ account: Account; index: number; onDelete: () => void }> = 
             <div className={styles.modalTitle}>Confirm Delete</div>
             <div className={styles.modalBody}>Are you sure you want to delete the key for "{account.issuer}"?</div>
             <div className={styles.modalFooter}>
-              <button className={styles.cancelBtn} onClick={() => setShowConfirm(false)}>Cancel</button>
-              <button className={styles.confirmBtn} onClick={handleDelete}>Delete</button>
+              <button className={styles.cancelBtn} onClick={(e) => { e.stopPropagation(); setShowConfirm(false); }}>Cancel</button>
+              <button className={styles.confirmBtn} onClick={(e) => { e.stopPropagation(); handleDelete(); }}>Delete</button>
             </div>
           </div>
         </div>
@@ -102,6 +113,7 @@ const CodeItem: FC<{ account: Account; index: number; onDelete: () => void }> = 
 
 const Code: FC = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [toast, setToast] = useState('');
 
   const load = useCallback(async () => {
     try {
@@ -116,16 +128,24 @@ const Code: FC = () => {
     load();
   }, [load]);
 
+  const handleCopy = () => {
+    setToast('Copied to clipboard');
+    setTimeout(() => setToast(''), 2000);
+  };
+
   if (accounts.length === 0) {
     return <div className={styles.empty}>No accounts yet. Add one in Settings.</div>;
   }
 
   return (
-    <div className={styles.list}>
-      {accounts.map((acc, i) => (
-        <CodeItem key={i} index={i} account={acc} onDelete={load} />
-      ))}
-    </div>
+    <>
+      {toast && <div className={styles.toast}>{toast}</div>}
+      <div className={styles.list}>
+        {accounts.map((acc, i) => (
+          <CodeItem key={i} index={i} account={acc} onDelete={load} onCopy={handleCopy} />
+        ))}
+      </div>
+    </>
   );
 };
 
