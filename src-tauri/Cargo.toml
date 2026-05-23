@@ -14,3 +14,8 @@ tauri-build = { version = "2", features = [] }
 tauri = { version = "2.11.2", features = [] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+arboard = "3"
+quircs = "0.10"
+base32 = "0.5"
+hmac = "0.12"
+sha1 = "0.10"
