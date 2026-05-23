@@ -1,6 +1,7 @@
 import { FC, useState, useEffect, useRef } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { useHashLocation } from 'wouter/use-hash-location';
+import { scan } from '@tauri-apps/plugin-barcode-scanner';
 import styles from './index.module.scss';
 
 const Setting: FC = () => {
@@ -9,7 +10,15 @@ const Setting: FC = () => {
   const [secret, setSecret] = useState('');
   const [saved, setSaved] = useState(false);
   const [status, setStatus] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
   const autoFilled = useRef(false);
+
+  // detect platform
+  useEffect(() => {
+    invoke<string>('get_platform').then((p) => {
+      if (p === 'android' || p === 'ios') setIsMobile(true);
+    });
+  }, []);
 
   // parse otpauth:// URI
   const parseUri = (uri: string) => {
@@ -18,7 +27,6 @@ const Setting: FC = () => {
       const url = new URL(uri);
       const qSecret = url.searchParams.get('secret') || '';
       const qIssuer = url.searchParams.get('issuer') || '';
-      // path format: /totp/Issuer:Label or /totp/Label
       const rawPath = decodeURIComponent(url.pathname);
       const label = rawPath.replace(/^\/totp\//, '') || '';
       const extractedIssuer = qIssuer || (label.includes(':') ? label.split(':')[0] : '');
@@ -29,9 +37,9 @@ const Setting: FC = () => {
     }
   };
 
-  // watch clipboard for QR codes
+  // desktop: watch clipboard for QR codes
   useEffect(() => {
-    if (autoFilled.current) return;
+    if (isMobile || autoFilled.current) return;
 
     const check = async () => {
       try {
@@ -52,7 +60,25 @@ const Setting: FC = () => {
     check();
     const timer = setInterval(check, 2000);
     return () => clearInterval(timer);
-  }, []);
+  }, [isMobile]);
+
+  // mobile: scan QR code with camera
+  const handleScan = async () => {
+    try {
+      const result = await scan();
+      if (!result || !result.content) return;
+      const parsed = parseUri(result.content);
+      if (parsed && parsed.secret) {
+        setIssuer(parsed.issuer);
+        setSecret(parsed.secret);
+        setStatus(`Scanned QR code for ${parsed.issuer || 'unknown'}`);
+      } else {
+        setStatus('Invalid 2FA QR code');
+      }
+    } catch (e) {
+      setStatus('Scan cancelled or failed');
+    }
+  };
 
   const handleSave = async () => {
     if (!issuer.trim() || !secret.trim()) return;
@@ -64,9 +90,8 @@ const Setting: FC = () => {
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 1500);
-      // navigate back to home after save
       setTimeout(() => setLocation('/'), 600);
-    } catch (e) {
+    } catch {
       setStatus('Save failed');
     }
   };
@@ -74,6 +99,11 @@ const Setting: FC = () => {
   return (
     <div className={styles.setting}>
       {status && <div className={styles.status}>{status}</div>}
+      {isMobile && (
+        <button className={styles.scanBtn} onClick={handleScan}>
+          Scan QR Code
+        </button>
+      )}
       <div className={styles.card}>
         <label className={styles.label}>provider</label>
         <input
