@@ -19,6 +19,98 @@
   cursor: pointer;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+}
+
+.deleteArea {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+}
+
+.deleteBtn {
+  background: #ff4d4f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+
+  &:hover {
+    background: #ff7875;
+  }
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 14px;
+  padding: 0;
+  width: 280px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+}
+
+.modalTitle {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  padding: 24px 20px 8px;
+}
+
+.modalBody {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  padding: 0 20px 20px;
+}
+
+.modalFooter {
+  display: flex;
+  border-top: 1px solid #f0f0f0;
+
+  button {
+    flex: 1;
+    height: 44px;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:first-child {
+      border-right: 1px solid #f0f0f0;
+    }
+  }
+}
+
+.confirmBtn {
+  background: #ff4d4f;
+  color: #fff;
+
+  &:hover {
+    background: #ff7875;
+  }
+}
+
+.cancelBtn {
+  background: #fff;
+  color: #333;
+
+  &:hover {
+    background: #f5f5f5;
+  }
 }
 .counter {
   display: flex;

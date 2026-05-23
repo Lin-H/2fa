@@ -2,7 +2,7 @@ use arboard::Clipboard;
 use quircs::Quirc;
 
 pub fn read_qr() -> Result<Option<String>, String> {
-    let mut clipboard = Clipboard::new().map_err(|e| format!("无法访问剪贴板: {}", e))?;
+    let mut clipboard = Clipboard::new().map_err(|e| format!("Cannot access clipboard: {}", e))?;
 
     let image_data = match clipboard.get_image() {
         Ok(img) => img,
@@ -13,7 +13,7 @@ pub fn read_qr() -> Result<Option<String>, String> {
     let height = image_data.height;
     let bytes = image_data.bytes;
 
-    // arboard 在 Windows 上返回 BGRA 格式
+    // arboard returns BGRA format on Windows
     let gray: Vec<u8> = bytes
         .chunks(4)
         .map(|p| (0.299 * p[2] as f32 + 0.587 * p[1] as f32 + 0.114 * p[0] as f32) as u8)

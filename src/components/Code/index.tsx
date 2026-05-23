@@ -13,8 +13,14 @@ interface CodeData {
   remaining: number;
 }
 
-const CodeItem: FC<{ account: Account }> = ({ account }) => {
+const CodeItem: FC<{ account: Account; index: number; onDelete: () => void }> = ({
+  account,
+  index,
+  onDelete,
+}) => {
   const [data, setData] = useState<CodeData>({ code: '------', remaining: 30 });
+  const [showDelete, setShowDelete] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     const update = async () => {
@@ -32,11 +38,45 @@ const CodeItem: FC<{ account: Account }> = ({ account }) => {
     return () => clearInterval(timer);
   }, [account.secret]);
 
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowDelete((v) => !v);
+    setShowConfirm(false);
+  };
+
+  const handleDelete = async () => {
+    try {
+      await invoke('delete_account', { index });
+      onDelete();
+    } catch {
+      // silent
+    }
+  };
+
   const getProgress = (p: number) => (2 * Math.PI * 21 * p) / 100;
   const progress = (data.remaining / 30) * 100;
 
   return (
-    <div className={styles.code}>
+    <div className={styles.code} onContextMenu={handleContextMenu}>
+      {showDelete && (
+        <div className={styles.deleteArea}>
+          <button className={styles.deleteBtn} onClick={() => setShowConfirm(true)}>
+            Delete
+          </button>
+        </div>
+      )}
+      {showConfirm && (
+        <div className={styles.overlay} onClick={() => setShowConfirm(false)}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalTitle}>Confirm Delete</div>
+            <div className={styles.modalBody}>Are you sure you want to delete the key for "{account.issuer}"?</div>
+            <div className={styles.modalFooter}>
+              <button className={styles.cancelBtn} onClick={() => setShowConfirm(false)}>Cancel</button>
+              <button className={styles.confirmBtn} onClick={handleDelete}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
       <div>
         <div className={styles.provider}>
           <div>
@@ -77,13 +117,13 @@ const Code: FC = () => {
   }, [load]);
 
   if (accounts.length === 0) {
-    return <div className={styles.empty}>暂无账号，请在设置中添加</div>;
+    return <div className={styles.empty}>No accounts yet. Add one in Settings.</div>;
   }
 
   return (
     <div className={styles.list}>
       {accounts.map((acc, i) => (
-        <CodeItem key={i} account={acc} />
+        <CodeItem key={i} index={i} account={acc} onDelete={load} />
       ))}
     </div>
   );

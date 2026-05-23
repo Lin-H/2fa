@@ -7,7 +7,7 @@ type HmacSha1 = Hmac<Sha1>;
 pub fn generate(secret_base32: &str) -> Result<(String, u64), String> {
     let secret =
         base32::decode(base32::Alphabet::Rfc4648 { padding: false }, secret_base32)
-            .ok_or_else(|| "无效的 Base32 密钥".to_string())?;
+            .ok_or_else(|| "Invalid Base32 secret".to_string())?;
 
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)

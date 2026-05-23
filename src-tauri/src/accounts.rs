@@ -11,7 +11,7 @@ pub struct Account {
 }
 
 fn accounts_path(app: &tauri::AppHandle) -> PathBuf {
-    let dir = app.path().app_data_dir().expect("无法获取应用数据目录");
+    let dir = app.path().app_data_dir().expect("Failed to get app data directory");
     dir.join("accounts.json")
 }
 
@@ -40,7 +40,7 @@ pub fn save(app: &tauri::AppHandle, account: Account) -> Result<(), String> {
 pub fn remove(app: &tauri::AppHandle, index: usize) -> Result<(), String> {
     let mut accounts = load(app);
     if index >= accounts.len() {
-        return Err("索引超出范围".to_string());
+        return Err("Index out of range".to_string());
     }
     accounts.remove(index);
     let data = serde_json::to_string_pretty(&accounts).map_err(|e| e.to_string())?;

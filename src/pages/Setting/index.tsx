@@ -11,14 +11,14 @@ const Setting: FC = () => {
   const [status, setStatus] = useState('');
   const autoFilled = useRef(false);
 
-  // 解析 otpauth:// URI
+  // parse otpauth:// URI
   const parseUri = (uri: string) => {
     try {
       if (!uri.startsWith('otpauth://')) return null;
       const url = new URL(uri);
       const qSecret = url.searchParams.get('secret') || '';
       const qIssuer = url.searchParams.get('issuer') || '';
-      // path 格式: /totp/Issuer:Label 或 /totp/Label
+      // path format: /totp/Issuer:Label or /totp/Label
       const rawPath = decodeURIComponent(url.pathname);
       const label = rawPath.replace(/^\/totp\//, '') || '';
       const extractedIssuer = qIssuer || (label.includes(':') ? label.split(':')[0] : '');
@@ -29,7 +29,7 @@ const Setting: FC = () => {
     }
   };
 
-  // 监听剪贴板中的二维码
+  // watch clipboard for QR codes
   useEffect(() => {
     if (autoFilled.current) return;
 
@@ -41,11 +41,11 @@ const Setting: FC = () => {
         if (parsed && parsed.secret) {
           setIssuer(parsed.issuer);
           setSecret(parsed.secret);
-          setStatus(`检测到 ${parsed.issuer || '未知'} 的二维码`);
+          setStatus(`Detected QR code for ${parsed.issuer || 'unknown'}`);
           autoFilled.current = true;
         }
       } catch {
-        // 静默失败
+        // silent
       }
     };
 
@@ -64,10 +64,10 @@ const Setting: FC = () => {
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 1500);
-      // 保存后自动跳回首页
+      // navigate back to home after save
       setTimeout(() => setLocation('/'), 600);
     } catch (e) {
-      setStatus('保存失败');
+      setStatus('Save failed');
     }
   };
 
@@ -81,7 +81,7 @@ const Setting: FC = () => {
           type="text"
           value={issuer}
           onChange={(e) => setIssuer(e.target.value)}
-          placeholder="输入提供商名称"
+          placeholder="Enter provider name"
         />
       </div>
       <div className={styles.card}>
@@ -91,7 +91,7 @@ const Setting: FC = () => {
           rows={4}
           value={secret}
           onChange={(e) => setSecret(e.target.value)}
-          placeholder="输入密钥"
+          placeholder="Enter secret key"
         />
       </div>
       <button
@@ -99,7 +99,7 @@ const Setting: FC = () => {
         onClick={handleSave}
         disabled={!issuer.trim() || !secret.trim()}
       >
-        {saved ? '✓ 已保存，即将返回' : '保存'}
+        {saved ? '✓ Saved, returning...' : 'Save'}
       </button>
     </div>
   );
