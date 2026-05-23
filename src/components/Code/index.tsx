@@ -67,6 +67,18 @@ const CodeItem: FC<{ account: Account; index: number; onDelete: () => void; onCo
   const getProgress = (p: number) => (2 * Math.PI * 21 * p) / 100;
   const progress = (data.remaining / 30) * 100;
 
+  const getCounterColor = () => {
+    const period = 30;
+    const threshold = period * 0.25; // 7.5s
+    const t = data.remaining <= threshold ? 1 : (period - data.remaining) / (period - threshold);
+    const lerp = (a: number, b: number) => Math.round(a + (b - a) * t);
+    const inner = `rgb(${lerp(41, 240)},${lerp(112, 68)},${lerp(255, 56)})`;
+    const outer = `rgb(${lerp(209, 240)},${lerp(224, 160)},${lerp(255, 160)})`;
+    return { inner, outer };
+  };
+
+  const { inner: innerColor, outer: outerColor } = getCounterColor();
+
   return (
     <div className={styles.code} onContextMenu={handleContextMenu} onClick={handleClick}>
       {showDelete && (
@@ -98,11 +110,12 @@ const CodeItem: FC<{ account: Account; index: number; onDelete: () => void; onCo
         <div className={styles.key}>{data.code}</div>
       </div>
       <svg className={styles.counter}>
-        <circle r="21" cx="24" cy="24" className={styles.outer}></circle>
+        <circle r="21" cx="24" cy="24" className={styles.outer} stroke={outerColor}></circle>
         <circle
           r="21"
           cx="24"
           cy="24"
+          stroke={innerColor}
           strokeDasharray={`${getProgress(progress)} 999`}
           className={styles.inner}
         ></circle>
