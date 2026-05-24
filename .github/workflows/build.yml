@@ -18,8 +18,6 @@ jobs:
         include:
           - os: ubuntu-latest
             target: linux-x86_64
-          - os: macos-13
-            target: macos-x86_64
           - os: macos-latest
             target: macos-aarch64
           - os: windows-latest
