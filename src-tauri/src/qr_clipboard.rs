@@ -1,4 +1,4 @@
-#[cfg(not(target_os = "android"))]
+#[cfg(not(any(target_os = "android", target_os = "ios")))]
 mod imp {
     use arboard::Clipboard;
     use quircs::Quirc;
@@ -43,7 +43,7 @@ mod imp {
     }
 }
 
-#[cfg(target_os = "android")]
+#[cfg(any(target_os = "android", target_os = "ios"))]
 mod imp {
     pub fn read_qr() -> Result<Option<String>, String> {
         Err("Clipboard QR scanning is not supported on this platform".to_string())
