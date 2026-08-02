@@ -125,7 +125,7 @@ jobs:
         run: npm run tauri android init
 
       - name: Build Android APK
-        run: npm run tauri android build -- --apk
+        run: npm run tauri -- android build --apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -165,7 +165,7 @@ jobs:
         run: npm run tauri ios init
 
       - name: Build iOS app
-        run: npm run tauri ios build --target aarch64-apple-ios-sim
+        run: npm run tauri -- ios build --target aarch64-sim
 
       - name: Upload iOS .app
         uses: actions/upload-artifact@v4
