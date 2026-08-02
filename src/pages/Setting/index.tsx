@@ -96,6 +96,12 @@ const Setting: FC = () => {
     }
   };
 
+  // 手动触发更新检查（由全局 Updater 组件处理结果）
+  const handleCheckUpdate = () => {
+    if (isMobile) return;
+    window.dispatchEvent(new Event('check-updates'));
+  };
+
   return (
     <div className={styles.setting}>
       {status && <div className={styles.status}>{status}</div>}
@@ -131,6 +137,11 @@ const Setting: FC = () => {
       >
         {saved ? '✓ Saved, returning...' : 'Save'}
       </button>
+      {!isMobile && (
+        <button className={styles.updateBtn} onClick={handleCheckUpdate}>
+          检查更新
+        </button>
+      )}
     </div>
   );
 };

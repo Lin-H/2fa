@@ -5,6 +5,7 @@ import setting from '@/assets/setting.svg';
 import back from '@/assets/return.svg';
 import Code from './components/Code';
 import Setting from './pages/Setting';
+import Updater from './components/Updater';
 
 function App() {
   const [location] = useHashLocation();
@@ -30,6 +31,7 @@ function App() {
           <Route path="/setting" component={Setting} />
         </Switch>
       </div>
+      <Updater />
     </Router>
   );
 }

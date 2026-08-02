@@ -53,6 +53,14 @@ fn generate_totp_code(secret: String) -> Result<(String, u64), String> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(barcode::init())
+        .plugin(tauri_plugin_process::init())
+        .setup(|app| {
+            // 桌面端注册自动更新插件（移动端不支持自动更新）
+            #[cfg(desktop)]
+            app.handle()
+                .plugin(tauri_plugin_updater::Builder::new().build())?;
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             get_platform,
             check_clipboard_qr,
