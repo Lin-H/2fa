@@ -124,8 +124,33 @@ jobs:
       - name: Initialize Android project
         run: npm run tauri android init
 
+      # Gradle 8.14.3 在 GitHub Actions 上偶发 kotlin-dsl 插件解析失败（artifact 实际存在于
+      # Plugin Portal，但 plugins-artifacts.gradle.org CDN 偶发不可达；8.14.4 已 backport
+      # 依赖解析修复 #35228）。这里升级 wrapper 到 8.14.4，并在 settings.gradle 顶部显式
+      # 声明 pluginManagement 仓库，避免默认仓库解析异常。
+      - name: Prepare Gradle for Android build
+        run: |
+          cd src-tauri/gen/android
+          # 1) 升级 Gradle wrapper 到 8.14.4
+          sed -i 's/gradle-8\.14\.3-bin\.zip/gradle-8.14.4-bin.zip/' gradle/wrapper/gradle-wrapper.properties
+          # 2) 在 settings.gradle 顶部显式声明 pluginManagement 仓库
+          if ! grep -q "pluginManagement" settings.gradle; then
+            sed -i '1i pluginManagement { repositories { gradlePluginPortal() } }' settings.gradle
+          fi
+          echo "--- gradle-wrapper.properties ---"
+          cat gradle/wrapper/gradle-wrapper.properties
+          echo "--- settings.gradle ---"
+          cat settings.gradle
+
+      # 插件/CDN 偶发网络失败时自动重试，最多 3 次
       - name: Build Android APK
-        run: npm run tauri -- android build --apk
+        run: |
+          for i in 1 2 3; do
+            npm run tauri -- android build --apk && exit 0
+            echo "Android build attempt $i failed, retrying..."
+            sleep 15
+          done
+          exit 1
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
