@@ -1,11 +1,9 @@
 {
   "identifier": "default",
-  "description": "Default capabilities",
+  "description": "全平台默认能力（移动端与桌面端通用）",
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "barcode-scanner:default",
-    "updater:default",
-    "process:default"
+    "barcode-scanner:default"
   ]
 }
