@@ -5,9 +5,13 @@ use std::time::{SystemTime, UNIX_EPOCH};
 type HmacSha1 = Hmac<Sha1>;
 
 pub fn generate(secret_base32: &str) -> Result<(String, u64), String> {
-    let secret =
-        base32::decode(base32::Alphabet::Rfc4648 { padding: false }, secret_base32)
-            .ok_or_else(|| "Invalid Base32 secret".to_string())?;
+    // RFC 4648 base32 大小写不敏感，统一转大写后再解码，
+    // 避免部分服务商（如 GitHub 文本展示）给出小写 secret 时解码失败
+    let secret = base32::decode(
+        base32::Alphabet::Rfc4648 { padding: false },
+        &secret_base32.to_ascii_uppercase(),
+    )
+    .ok_or_else(|| "Invalid Base32 secret".to_string())?;
 
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)

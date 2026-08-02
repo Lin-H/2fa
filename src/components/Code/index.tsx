@@ -1,5 +1,6 @@
 import { FC, useState, useEffect, useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 import styles from './index.module.scss';
 
 interface Account {
@@ -23,26 +24,56 @@ const CodeItem: FC<{ account: Account; index: number; onDelete: () => void; onCo
   const [showDelete, setShowDelete] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  const update = useCallback(async (): Promise<CodeData | null> => {
+    try {
+      const [code, remaining]: [string, number] = await invoke('generate_totp_code', {
+        secret: account.secret,
+      });
+      const next: CodeData = { code, remaining };
+      setData(next);
+      return next;
+    } catch {
+      setData({ code: '------', remaining: 30 });
+      return null;
+    }
+  }, [account.secret]);
+
   useEffect(() => {
-    const update = async () => {
-      try {
-        const [code, remaining]: [string, number] = await invoke('generate_totp_code', {
-          secret: account.secret,
-        });
-        setData({ code, remaining });
-      } catch {
-        setData({ code: '------', remaining: 30 });
-      }
-    };
     update();
     const timer = setInterval(update, 1000);
-    return () => clearInterval(timer);
-  }, [account.secret]);
+
+    // 窗口重新聚焦或页面重新可见时立即刷新 code，
+    // 避免后台定时器被系统节流导致显示的 code 过期
+    const handleFocus = () => {
+      if (document.visibilityState === 'visible') update();
+    };
+    document.addEventListener('visibilitychange', handleFocus);
+    window.addEventListener('focus', handleFocus);
+
+    // 监听原生窗口焦点变化，重新获得焦点时同步刷新
+    let unlistenFocus: (() => void) | undefined;
+    getCurrentWindow()
+      .onFocusChanged(({ payload }) => {
+        if (payload) update();
+      })
+      .then((fn) => {
+        unlistenFocus = fn;
+      });
+
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', handleFocus);
+      window.removeEventListener('focus', handleFocus);
+      unlistenFocus?.();
+    };
+  }, [update]);
 
   const handleClick = async () => {
     if (showDelete || showConfirm) return;
     try {
-      await navigator.clipboard.writeText(data.code);
+      // 复制前重新生成最新 code，确保复制到的是未过期的值
+      const fresh = await update();
+      if (fresh) await navigator.clipboard.writeText(fresh.code);
       onCopy();
     } catch {
       // silent
