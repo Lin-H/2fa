@@ -17,6 +17,10 @@
 
 这是一个基于 [Tauri v2](https://v2.tauri.app) 的 PC 双因素认证（2FA）桌面应用，前端使用 React + TypeScript，支持 TOTP 验证码与扫码录入。
 
+## 截图
+
+![软件截图](screenshot.png)
+
 ## Recommended IDE Setup
 
 - [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
